@@ -15,78 +15,72 @@ const SUPPORTED_TYPES = [
 export async function POST(request: NextRequest) {
     try {
         const formData = await request.formData()
-        const files = formData.getAll("files") as File[]
+        const file = formData.get("file") as File | null
 
-        if (!files || files.length === 0) {
+        if (!file) {
             return NextResponse.json({ error: "File tidak ditemukan" }, { status: 400 })
         }
 
         const maxSize = 10 * 1024 * 1024
-        for (const file of files) {
-            if (!SUPPORTED_TYPES.includes(file.type)) {
-                return NextResponse.json(
-                    { error: `Format ${file.type} tidak didukung. Gunakan JPG, PNG, WebP, atau GIF.` },
-                    { status: 400 }
-                )
-            }
-            if (file.size > maxSize) {
-                return NextResponse.json(
-                    { error: `File ${file.name} melebihi batas 10MB` },
-                    { status: 400 }
-                )
-            }
+        if (!SUPPORTED_TYPES.includes(file.type)) {
+            return NextResponse.json(
+                { error: `Format ${file.type} tidak didukung. Gunakan JPG, PNG, WebP, atau GIF.` },
+                { status: 400 }
+            )
+        }
+        if (file.size > maxSize) {
+            return NextResponse.json(
+                { error: `File ${file.name} melebihi batas 10MB` },
+                { status: 400 }
+            )
         }
 
         const pdfDoc = await PDFDocument.create()
 
-        for (const file of files) {
-            const arrayBuffer = await file.arrayBuffer()
-            const buffer = Buffer.from(arrayBuffer)
+        const arrayBuffer = await file.arrayBuffer()
+        const buffer = Buffer.from(arrayBuffer)
 
-            const processedBuffer = await sharp(buffer)
-                .jpeg({ quality: 90 })
-                .toBuffer()
+        const processedBuffer = await sharp(buffer)
+            .jpeg({ quality: 90 })
+            .toBuffer()
 
-            const metadata = await sharp(buffer).metadata()
-            const imgWidth = metadata.width || 595
-            const imgHeight = metadata.height || 842
+        const metadata = await sharp(buffer).metadata()
+        const imgWidth = metadata.width || 595
+        const imgHeight = metadata.height || 842
 
-            const maxPageWidth = 595
-            const maxPageHeight = 842
-            const margin = 20
+        const maxPageWidth = 595
+        const maxPageHeight = 842
+        const margin = 20
 
-            let pageWidth = imgWidth + margin * 2
-            let pageHeight = imgHeight + margin * 2
+        let pageWidth = imgWidth + margin * 2
+        let pageHeight = imgHeight + margin * 2
 
-            let scale = 1
-            if (pageWidth > maxPageWidth) {
-                scale = (maxPageWidth - margin * 2) / imgWidth
-            }
-            if (pageHeight * scale > maxPageHeight) {
-                scale = (maxPageHeight - margin * 2) / imgHeight
-            }
-
-            const scaledWidth = imgWidth * scale
-            const scaledHeight = imgHeight * scale
-            pageWidth = scaledWidth + margin * 2
-            pageHeight = scaledHeight + margin * 2
-
-            const page = pdfDoc.addPage([pageWidth, pageHeight])
-
-            const jpgImage = await pdfDoc.embedJpg(processedBuffer)
-            page.drawImage(jpgImage, {
-                x: margin,
-                y: margin,
-                width: scaledWidth,
-                height: scaledHeight,
-            })
+        let scale = 1
+        if (pageWidth > maxPageWidth) {
+            scale = (maxPageWidth - margin * 2) / imgWidth
         }
+        if (pageHeight * scale > maxPageHeight) {
+            scale = (maxPageHeight - margin * 2) / imgHeight
+        }
+
+        const scaledWidth = imgWidth * scale
+        const scaledHeight = imgHeight * scale
+        pageWidth = scaledWidth + margin * 2
+        pageHeight = scaledHeight + margin * 2
+
+        const page = pdfDoc.addPage([pageWidth, pageHeight])
+
+        const jpgImage = await pdfDoc.embedJpg(processedBuffer)
+        page.drawImage(jpgImage, {
+            x: margin,
+            y: margin,
+            width: scaledWidth,
+            height: scaledHeight,
+        })
 
         const pdfBytes = await pdfDoc.save()
 
-        const outputFileName = files.length === 1
-            ? `rizkypdf-${files[0].name.replace(/\.[^.]+$/, ".pdf")}`
-            : "rizkypdf-images.pdf"
+        const outputFileName = `rizkypdf-${file.name.replace(/\.[^.]+$/, ".pdf")}`
 
         return new Response(pdfBytes as unknown as BodyInit, {
             status: 200,
