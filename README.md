@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RizkyPDF
 
-## Getting Started
+**Free Document Converter** - Konversi dokumen secara gratis, cepat, dan aman.
 
-First, run the development server:
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+## ✨ Features
+
+| Tool | Deskripsi |
+|------|-----------|
+| **PDF to Word** | Konversi PDF ke dokumen Word (.docx) |
+| **Word to PDF** | Konversi Word (.doc/.docx) ke PDF |
+| **Image to PDF** | Konversi gambar (JPG, PNG, WebP, GIF) ke PDF |
+| **PDF to Image** | Konversi halaman PDF ke gambar PNG |
+
+## 🚀 Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
+- **PDF Processing**: 
+  - `pdf-lib` - Membuat dan memodifikasi PDF
+  - `pdfjs-dist` - Render PDF ke gambar (client-side)
+  - `docx` - Membuat dokumen Word
+  - `mammoth` - Membaca dokumen Word
+- **Image Processing**: Sharp
+
+## 📦 Installation
 
 ```bash
+# Clone repository
+git clone https://github.com/rizkykr/rizkypdf.git
+
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka [http://localhost:3000](http://localhost:3000) di browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔧 Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Build untuk production
+npm run build
 
-## Learn More
+# Start production server
+npm start
+```
 
-To learn more about Next.js, take a look at the following resources:
+## ☁️ Deploy
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Vercel (Recommended)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/rizkykr/rizkypdf)
 
-## Deploy on Vercel
+1. Push ke GitHub
+2. Import project di Vercel
+3. Deploy otomatis setiap push ke main branch
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📁 Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/
+│   ├── api/
+│   │   ├── convert/          # PDF to Word API
+│   │   ├── image-to-pdf/     # Image to PDF API
+│   │   └── word-to-pdf/      # Word to PDF API
+│   ├── pdf-to-image/         # PDF to Image (client-side)
+│   └── ...
+├── components/
+│   ├── converter/            # Converter components
+│   ├── layout/               # Header, Footer
+│   └── ui/                   # UI components (shadcn)
+└── lib/
+    └── utils.ts
+```
+
+## 🔒 Privacy
+
+- File diproses secara lokal atau di server sementara
+- Tidak ada file yang disimpan permanen
+- PDF to Image diproses langsung di browser (tidak dikirim ke server)
+
+## 📄 License
+
+MIT License - Rizky Kurniawan
+
+---
+
+**RizkyPDF** - Made with ❤️ in Medan, Indonesia
